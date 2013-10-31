@@ -1,3 +1,56 @@
+>>>
+
+
+
+
+>>>
+
+
+
+
+
+TODO: bloquear comandos enquanto está processando algum dado
+OK: quando estiver falando alguma resposta ignorar comandos
+
+
+
+http://padlet.com/wall/hackathon
+
+
+
+> 18-19 de novembro - Luca
+
+  
+open "/Applications/Google Chrome Canary.app" --args --disable-extensions-http-throttling
+
+
+https://www.wf-site.com/microsite/pages/c4bca81a50c10dc1
+http://www.melhoresdestinos.com.br/promocao-de-passagens-ushuaia.html
+http://www.berriart.com/sidr/#usage
+http://tympanus.net/Blueprints/SlidePushMenus/
+http://freebbble.com/2013/07/01/responsive-layout-with-navigation-drawer/
+http://tutorialzine.com/2013/10/12-awesome-css3-features-you-can-finally-use/
+
+
+
+http://www.movable-type.co.uk/scripts/latlong.html
+
+
+http://timeline.knightlab.com/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 >> vaga face
    https://www.facebook.com/careers/resume?dept=engineering&req=a0IA000000CwgnEMAR&import_profile=1
 
@@ -14,12 +67,11 @@ http://anatomiadamusculacao.blogspot.com.br/2013/10/a-propaganda-mexicana-que-ch
 >>> DUVIDA: ordem das proposições da pauta do plenário (REQ e PLs)
 	http://www.camara.gov.br/SitCamaraWS/Orgaos.asmx/ObterPauta?IDOrgao=180&datIni=24/10/2013&datFim=24/10/2013
 
-	http://www.camara.gov.br/SitCamaraWS/Orgaos.asmx/ObterPauta?IDOrgao=180&datIni=29/10/2013&datFim=29/10/2013
-
 >>> DUVIDA: qual a diferença de Encerrada e Encerrada (Final)?
 
 
-
+>>> ListarProposicoesVotadasEmPlenario podia ter a data da votação
+>>> 
 
 
 

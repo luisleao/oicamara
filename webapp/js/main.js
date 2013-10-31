@@ -1,12 +1,17 @@
 
 var active = true;
 var comando_ativo = false;
+var falando = false;
 
 
-var NOME = "";
+var last_talk = null;
+
+//TODO: acertar bug no 'nao entendi o que voce disse'
 
 
-var video = document.getElementById("video");
+
+
+
 
 
 var audio_ativo = new Audio();
@@ -17,18 +22,12 @@ audio_inativo.src = "media/inativo.mp3";
 
 
 
-video.addEventListener('ended', function(){
-  this.currentTime = 0;
-  this.pause();
-  //TODO: retornar para interface inicial
-});
-
 
 
 
 var comando_on = function() {
+  // indicativo visual ON
   comando_ativo = true;
-  //TODO: indicativo visual ON
   audio_ativo.currentTime = 0;
   audio_ativo.play();
 
@@ -36,48 +35,21 @@ var comando_on = function() {
 };
 
 var comando_off = function(nao_inicia) {
+  // indicativo visual OFF
   comando_ativo = false;
   $("body").removeClass("ativo");
-  //TODO: indicativo visual OFF
   if (!nao_inicia) inicia_comandos();
 };
 
 
 
 
-
-
-var stop_tudo = function() {
-
-  if (!audio_ativo.paused) audio_ativo.pause();
-  if (!audio_inativo.paused) audio_inativo.pause();
-
-  if (!video.paused) video.pause();
-
-}
-
-
-var limpar_timers = function(){
-}
-
-
-var play_video = function(src) {
-  video.src = src;
-  video.currentTime = 0;
-  video.play();
-}
+var COMANDO_ATIVACAO = "Diga, oi câmara, para ouvir as opções possíveis.";
 
 
 
 
-var validaData = function(dia, mes, ano) {
-  if (!dia > 0 && dia < 31)
-    return false;
 
-  return true;
-  //validar data completa
-
-}
 
 var formatDate = function(date) {
   var date_array = date.toLocaleDateString().split("/");
@@ -99,12 +71,21 @@ function pad(n, width, z) {
 var set_relogio = function(){
   var d = new Date();
   var data_hora = d.getHours() + ":" + pad(d.getMinutes(), 2);
-  $(".relogio.current").text(data_hora);
+  $(".relogio").text(data_hora);
+
+
+  // força retomar o reconhecimento de voz
+  if (!falando && !recognizing || (last_talk && Date.now() - last_talk > 10000)) {
+    falando = false; last_talk = null;
+    console.log("REINICIANDO RECONHECIMENTO!");
+    inicia_comandos();
+    recognition.start();
+  }
+
 };
 
-
+// intervalo para relogio na tela e verificacao de erros no TTS
 setInterval(set_relogio, 1000);
-  
 
 
 var selecao_data;
@@ -113,7 +94,10 @@ var selecao_data_dia;
 
 
 var regex_mes = [new RegExp("(janeiro|fevereiro|março|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)")];
-var regex_dia = [new RegExp("(primeiro)"), new RegExp("([12]?[0-9]|3[0-1])")];
+var regex_dia = [new RegExp("(primeiro)"), new RegExp("(\\d{1,2})")]; //([12]?[0-9]|3[0-1])
+
+
+
 
 /* * * * * * * * * * * * * * * * * * * *  CONFIGURANDO WEBSPEECH  * * * * * * * * * * * * * * * * * * * */
 
@@ -131,14 +115,18 @@ var comandos = {
   "oi_camara": {
     "nome": "Comando inicial",
     "alias": [/oi câmara/g, /oi câmera/g], //"oi câmara", "oi câmera",
-    "action": function() {
+    "action": function(texto, tag, regex_result) {
 
-      falar("Qual informação você gostaria de saber sobre a câmara? Processo legislativo ou curiosidades?", function() {
+      var textos = [
+        "Qual informação você gostaria de saber sobre a câmara?",
+        "Projetos de lei, presença dos deputados ou pauta do plenário.",
+        "Se quiser ouvir informações sobre tempo, diga por exemplo, tempo em brasília.",
+      ];
+
+      falar_mais(textos, function() {
 
         inicia_comandos();
-        comandos_atuais.push(comandos["processo_legislativo"]);
-        comandos_atuais.push(comandos["curiosidades"]);
-        comandos_atuais.push(comandos["cancelar"]);
+        comandos_atuais.unshift(comandos["cancelar"]);
         comando_on();
       
       });
@@ -150,25 +138,64 @@ var comandos = {
   "cancelar": {
     "nome": "Cancelar comando",
     "alias": [/cancelar/g, /cancela/g, /não/g], //"cancelar", "cancela"
-    "action": function() {
+    "action": function(texto, tag, regex_result) {
       comando_off();
+      falar(COMANDO_ATIVACAO);
     }
   },
 
+
+ /* ************************************************************************************************************************ */
+ /* ESPECIAIS */
+
+ "extrato_legislativo": {
+    "nome": "Extrato Legislativo",
+    "alias": [/extrato legislativo/g, /estrato legislativa/g, /estrato legislativo/g, /estrato legislativa/g],
+    "action": function(texto, tag, regex_result) {
+      falar_mais(["Aguarde. Solicitei a impressão do extrato legislativo...", COMANDO_ATIVACAO], function(){
+        inicia_comandos();
+      });
+    }
+ },
+
+
+ "leitura_artigo_regimento": {
+    "nome": "Extrato Legislativo",
+    "alias": [new RegExp("artigo\\s([\\d]*)º?\\sdo\\sregimento")],
+    "action": function(texto, tag, regex_result) {
+
+      var texto = [];
+      if (regex_result > 282) {
+        texto.push("O regimento interno da Câmara possui apenas 282 artigos.");
+        texto.push("De qualquer forma, esta função ainda não foi implementada");
+      } else {
+        texto.push("Não consigo ler o artigo "+regex_result+"º do regimento.");
+        texto.push("Esta função ainda não foi implementada");
+      }
+      texto.push(COMANDO_ATIVACAO);
+
+      falar_mais(texto, function(){
+        inicia_comandos();
+      });
+    }
+ },
+
+
+ /* ************************************************************************************************************************ */
 
 
  "processo_legislativo": {
     "nome": "Processo Legislativo",
     "alias": [/processo legislativo/g, /processo/g, /legislativo/g], 
-    "action": function(texto, tag, index) {
+    "action": function(texto, tag, regex_result) {
 
       falar("Para o processo legislativo você quer quais informações?", function(){
         falar("Você pode saber sobre andamento dos projetos de lei, presença dos deputados ou pauta do plenário.", function(){
 
           inicia_comandos();
-          comandos_atuais.push(comandos["projetos_de_lei"]);
-          comandos_atuais.push(comandos["presenca_deputados"]);
-          comandos_atuais.push(comandos["pauta_plenario"]);
+          comandos_atuais.unshift(comandos["projetos_de_lei"]);
+          comandos_atuais.unshift(comandos["presenca_deputados"]);
+          comandos_atuais.unshift(comandos["pauta_plenario"]);
           comando_on();
 
         });
@@ -182,11 +209,22 @@ var comandos = {
     "alias": [/projeto de lei/g, /projetos de lei/g], 
     "action": function() {
 
-      falar("Vou falar sobre o andamento dos projetos de lei...");
-      inicia_comandos();
+      var textos = [
+        "Na versão beta, esta função ainda não foi implementada.",
+        COMANDO_ATIVACAO
+      ];
+      falar_mais(textos, function(){
+        inicia_comandos();
+      });
 
     }
  },
+
+
+
+ /* ************************************************************************************************************************ */
+
+
 
  "presenca_deputados":{
     "nome": "presenca_deputados",
@@ -195,9 +233,9 @@ var comandos = {
       selecao_data = selecao_data_mes = selecao_data_dia = null;
       falar("Você quer a presença dos deputados de hoje, ontem ou de qual mês?", function(){
         inicia_comandos();
-        comandos_atuais.push(comandos["presenca_hojeontem"]);
-        comandos_atuais.push(comandos["presenca_mes"]);
-        comandos_atuais.push(comandos["cancelar"]);
+        comandos_atuais.unshift(comandos["presenca_hojeontem"]);
+        comandos_atuais.unshift(comandos["presenca_mes"]);
+        comandos_atuais.unshift(comandos["cancelar"]);
         comando_on();
 
       });
@@ -225,30 +263,13 @@ var comandos = {
     "alias": regex_mes, 
     "action": function(texto, tag, regex_result) {
 
-      //console.log("texto, tag, regex");
-      //console.log(texto, tag, regex);
-      //console.log(regex.exec(texto));
-      //var mes = regex_result[0];
-
-      //console.log(mes);
-
       selecao_data_mes = regex_result;
       falar("Qual dia do mês de " + regex_result + "?", function(){
         inicia_comandos();
-        comandos_atuais.push(comandos["presenca_dia"]);
-        comandos_atuais.push(comandos["cancelar"]);
+        comandos_atuais.unshift(comandos["presenca_dia"]);
+        comandos_atuais.unshift(comandos["cancelar"]);
         comando_on();
       });
-
-/*
-      falar("Você quer a presença dos deputados em qual mês?", function(){
-        inicia_comandos();
-        comandos_atuais.push(comandos["presenca_mes"]);
-        comandos_atuais.push(comandos["cancelar"]);
-        comando_on();
-
-      });
-*/
 
     }
  },
@@ -258,6 +279,8 @@ var comandos = {
     "alias": regex_dia, 
     "action": function(texto, tag, regex_result) {
 
+      if (regex_result == "primeiro")
+        regex_result = 1;
 
       var dia = parseInt(regex_result);
       selecao_data_dia = dia;
@@ -283,58 +306,157 @@ var comandos = {
       var data = new Date(new Date().getFullYear(), mes, dia);
       carrega_presenca(data);
 
-/*
-      if (validaData(dia, mes, new Date().getFullYear())) {
-      } else {
-        falar("Não entendi o dia corretamente. Qual dia você quer do mês de "+selecao_data_mes+"?", function(){
-          inicia_comandos();
-          comandos_atuais.push(comandos["presenca_dia"]);
-          comandos_atuais.push(comandos["cancelar"]);
-          comando_on();
-
-        })
-      }
-*/
-
     }
  },
 
 
+ /* ************************************************************************************************************************ */
+
+
+
  "pauta_plenario":{
     "nome": "pauta_plenario",
-    "alias": [/pauta do plenário/g, /pauta/g, /plenário/g, /plenária/g], 
-    "action": function(texto, tag, index) {
+    "alias": [/pauta do plenário/g, /pauta da plenária/g, /pauta/g, /plenário/g, /plenária/g], 
+    "action": function(texto, tag, regex_result) {
 
-      falar("Vou falar sobre a pauta do plenário. Você quer saber sobre a pauta de hoje?");
+      falar("Vou falar sobre a pauta do plenário. Você quer saber sobre a pauta de hoje, ontem ou de qual mês?", function(){
+        inicia_comandos();
+        comandos_atuais.unshift(comandos["pauta_hojeontem"]);
+        comandos_atuais.unshift(comandos["pauta_mes"]);
+        comandos_atuais.unshift(comandos["cancelar"]);
+        comando_on();
+      });
       inicia_comandos();
 
     }
  },
 
 
+ "pauta_hojeontem": {
+  "nome": "pauta_hojeontem",
+  "alias": [new RegExp("(hoje|ontem)")],
+  "action": function(texto, tag, regex_result) {
+    var data = new Date();
+    switch(regex_result) {
+      case "ontem": data.setDate(data.getDate() - 1); break;
+    }
 
- "curiosidades": {
-    "nome": "curiosidades",
-    "alias": [/curiosidade/g], 
-    "action": function(texto, tag, index) {
+    carrega_pauta(data); 
+  }
+ },
 
-      falar("Existe uma passagem secreta no salão negro. Pergunta pro Pedro que ele sabe.");
+ "pauta_mes": {
+    "nome": "pauta_mes",
+    "alias": regex_mes, 
+    "action": function(texto, tag, regex_result) {
+
+      selecao_data_mes = regex_result;
+      falar("Qual dia do mês de " + regex_result + "?", function(){
+        inicia_comandos();
+        comandos_atuais.unshift(comandos["pauta_dia"]);
+        comandos_atuais.unshift(comandos["cancelar"]);
+        comando_on();
+      });
+
+    }
+ },
+
+ "pauta_dia": {
+    "nome": "pauta_dia",
+    "alias": regex_dia, 
+    "action": function(texto, tag, regex_result) {
+
+      if (regex_result == "primeiro")
+        regex_result = 1;
+
+      var dia = parseInt(regex_result);
+      selecao_data_dia = dia;
+     
+      var mes;
+      switch(selecao_data_mes) {
+        case "janeiro": mes = 0; break;
+        case "fevereiro": mes = 1; break;
+        case "março": mes = 2; break;
+        case "abril": mes = 3; break;
+        case "maio": mes = 4; break;
+        case "junho": mes = 5; break;
+        case "julho": mes = 6; break;
+        case "agosto": mes = 7; break;
+        case "setembro": mes = 8; break;
+        case "outubro": mes = 9; break;
+        case "novembro": mes = 10; break;
+        case "dezembro": mes = 11; break;
+      }
+
+
+      console.log(dia, mes);
+      var data = new Date(new Date().getFullYear(), mes, dia);
+      carrega_pauta(data);
 
     }
  },
 
 
+
+
+
+
+
+
+
+ /* ************************************************************************************************************************ */
+
+
+ "curiosidades": {
+    "nome": "curiosidades",
+    "alias": [/curiosidade/g, /curiozidade/g], 
+    "action": function(texto, tag, regex_result) {
+
+      var idx = Math.floor((Math.random()*curiosidades.length));
+      falar_mais(divide_texto_em_100(curiosidades[idx]), function(){
+
+        falar("Você gostaria de ouvir mais uma curiosidade ou quer retornar?", function(){
+          inicia_comandos();
+          comandos_atuais.unshift({
+            "nome": "mais_uma_curiosidade",
+            "alias": [/sim/g, /quero/g, /mais uma/g],
+            "action": function() {
+              comandos["curiosidades"].action()
+            }
+          });
+          
+          comandos_atuais.unshift({
+            "nome": "retornar_oicamara",
+            "alias": [/não/g, /retornar/g],
+            "action": function(){
+              comandos["oi_camara"].action()
+            }
+          });
+
+          comando_on();
+        });
+
+      });
+
+    }
+ },
+
+
+
+ /* ************************************************************************************************************************ */
+
+
  "horas": {
     "nome": "Horas do Dia",
-    "alias": [/sim/g,/quantas horas/g, /que horas são/g], //"quantas horas", "que horas são"
-    "action": function(texto, tag, index) {
+    "alias": [/quantas horas/g, /que horas são/g, /oras/g], //"quantas horas", "que horas são"
+    "action": function(texto, tag, regex_result) {
 
       var d = new Date();
       var data_hora = d.getHours() + " horas, " + d.getMinutes() + " minutos e " + d.getSeconds() + " segundos. ";
       var data_hora = d.getHours() + " horas e " + d.getMinutes() + " minutos.";
       console.log(data_hora);
 
-      falar("São " + data_hora);
+      falar("São " + data_hora + ". " + COMANDO_ATIVACAO);
 
     }
   },
@@ -342,13 +464,15 @@ var comandos = {
 
   "tempo": {
     "nome": "Tempo",
-    "alias": [/tempo em/g], //"tempo em"
-    "action": function(texto, tag, index) {
+    "alias": [new RegExp("tempo em ([\\W\\w]*)")], //"tempo em"
+    "action": function(texto, tag, regex_result) {
 
-      var dados = texto.split(tag);
-      window.ultima_cidade = dados[dados.length-1];
+      //var dados = regex_result; //texto.split(tag);
+      window.ultima_cidade = regex_result; //dados[dados.length-1];
 
-      $.getJSON("http://api.openweathermap.org/data/2.5/weather?lang=pt&units=metric&q="+window.ultima_cidade+",%20BR", function(data){
+      var url = "http://api.openweathermap.org/data/2.5/weather?lang=pt&units=metric&q="+encodeURI(window.ultima_cidade)+",%20BR";
+      console.log(url);
+      $.getJSON(url, function(data){
 
         if (!data.main) {
           falar("não encontrei a cidade " + window.ultima_cidade + ". Desculpe.");
@@ -357,27 +481,14 @@ var comandos = {
         }
         var tempo = Math.round(data.main.temp);
         var status = data.weather[0].description;
-        var cidade = data.name;
+        var cidade = data.name != "" ? data.name : window.ultima_cidade;
 
-        falar(tempo+" gráus em "+cidade+", com "+status+".");
+        falar("em "+cidade+", " +tempo+" gráus com "+status+". " + COMANDO_ATIVACAO);
       });
     }
   },
 
 
-  "lista_presenca": {
-    "nome": "Lista de presença",
-    "alias": [/lista de presença/g], //"lista de presença"
-    "action": function(texto, tag, index) {
-
-
-
-
-
-
-
-    }
-  },
 
 };
 
@@ -390,27 +501,23 @@ var limpa_comandos = function(){
 
 var inicia_comandos = function(){
   limpa_comandos();
-  comandos_atuais.push(comandos["oi_camara"]);
-  comandos_atuais.push(comandos["presenca_deputados"]);
+  comandos_atuais.unshift(comandos["oi_camara"]);
 
+  comandos_atuais.unshift(comandos["projetos_de_lei"]);
+  comandos_atuais.unshift(comandos["presenca_deputados"]);
+  comandos_atuais.unshift(comandos["pauta_plenario"]);
+  comandos_atuais.unshift(comandos["extrato_legislativo"]);
+  comandos_atuais.unshift(comandos["leitura_artigo_regimento"]);
+  comandos_atuais.unshift(comandos["curiosidades"]);
+
+
+  comandos_atuais.unshift(comandos["horas"]);
+  comandos_atuais.unshift(comandos["tempo"]);
 
 }
 
 
-// gerar tabela de tags (utilizadas para encontrar os comandos)
-/*
-for (var idx in comandos) {
-  var comando = comandos[idx];
 
-  for (var idx_alias in comando.alias) {
-    var tag = comando.alias[idx_alias];
-    if (!tags[tag]) {
-      tags[tag] = idx;
-    }
-  }
-}
-
-*/
 
 
 
@@ -422,13 +529,12 @@ function executar_comando(texto) {
       var comando = comandos_atuais[idx];
       for (var idx_alias in comando.alias) {
         var alias = comando.alias[idx_alias];
-        console.log(alias);
+        //console.log(alias);
         if (alias.test(texto)) {
           //if (comando_ativo || !comando.need_comando_ativo) {
             comando_off(false);
             regex_result = alias.exec(texto);
-            console.log("COMANDO: " + comando.nome);
-            comando.action(texto, comando, regex_result && regex_result.length > 0 ? regex_result[0]: regex_result);
+            comando.action(texto, comando, regex_result && regex_result.length > 0 ? regex_result[1]: regex_result);
             return true;
           //}
         }
@@ -437,95 +543,14 @@ function executar_comando(texto) {
 
     return false;
 
-
-/*
-
-
-    for (var tag in tags) {
-      var index = texto.indexOf(tag) ;
-      if (index != -1) {
-        //achou comando!
-        var comando = comandos[tags[tag]];
-        if (comando_ativo || !comando.need_comando_ativo) {
-          console.log("COMANDO: " + comando.nome);
-          comando.action(texto, tag, index);
-          return true;
-        }
-      }
-    }
-
-*/
-/*
-
-          case "me chama de":
-          case "me chamam de":
-          case "chamar de":
-
-            NOME = args.substring(args.indexOf(comando)+comando.length+1).trim();
-            console.log("novo nome ", NOME);
-
-            if (NOME == "filho da puta") {
-              falar("nem precisa pedir.");
-
-            } else {
-              console.log(args);
-              falar("tudo bem.");
-            }
-            return;
-            break;
-
-
-          case "não me chama de nada":
-          case "não me chame de nada":
-            NOME = "";
-            falar("melhor assim do que perder o respeito, né?");
-            return;
-            break;
-
-
-
-
-
-          case "até mais":
-          case "tchau":
-          case "tiau":
-            falar("tô indo nessa, galera. Qualquer dúvida pode perguntar pro Leão!");
-            window.slidedeck.loadSlide(slides.indexOf("duvidas")+1);
-            return;
-            break;
-
-
-
-*/
-
-
 }
 
 
 
-function falar(texto, callback) {
-  //acender luz azul
-  //set_lamp_state(LAMPADA_LUMINARIA, true, 55000, 255, 255, "none"); //45000
 
-  console.log("AUDIO: ", texto);
 
-  var audio_especial = new Audio();
-  audio_especial.addEventListener('ended', function(){
-    if (callback) { 
-      callback();
-    } else {
-      //apagar luzes
-      comando_off();
-    }
-  });
 
-  //http://translate.google.com.br/translate_tts?ie=UTF-8&q=teste&tl=pt-BR&total=1&idx=0&textlen=5
 
-  audio_especial.src = "http://translate.google.com.br/translate_tts?ie=UTF-8&tl=pt&total="+texto.length+"&q=" + texto;
-  console.log(audio_especial.src);
-  audio_especial.play();
-
-}
 
 
 var recognizing = false;
@@ -548,18 +573,15 @@ recognition.onstart = function() {
 
 recognition.onerror = function(event) {
   console.log("ERRO!", event.error);
-  
 
-  if (comando_ativo) { //event.error == "no-speech" && 
-
-    //TODO: repetir ultimo comando
+  if (comando_ativo) { 
     //comando_off(true);
-
     //audio_inativo.currentTime = 0;
     //audio_inativo.play();
   }
 
   /*
+  tratamento de erros de reconhecimento, se necessario
   if (event.error == 'no-speech') {
     start_img.src = 'mic.gif';
     showInfo('info_no_speech');
@@ -587,42 +609,30 @@ recognition.onend = function() {
 
 
   recognizing = false;
-  if (ignore_onend) {
-    return;
-  }
-
-  recognition.start();
+  //if (ignore_onend) {
+  //  return;
+  //}
+  //recognition.start();
 
 };
 
 recognition.onresult = function(event) {
 
+  if (falando) {
+    console.log("detectou alguma coisa mas ainda está falando há " + (Date.now() - last_talk));
+    return;
+  }
+  console.log("Detectei alguma coisa", event.results);
+
   // verificar comandos aqui
   for (var i = event.resultIndex; i < event.results.length; ++i) {
     var r = event.results[i];
     for (var j = 0; j< r.length; j++) {
-      console.log(i, j, r[j])
-
-
+      //console.log(i, j, r[j])
       if (executar_comando(r[j].transcript.trim()))
         return;
 
-      /*
-      //TODO: MUDAR!!!
-      for (indice in comandos) {
-        var comando = comandos[indice];
-
-        if (r[j].transcript.indexOf(comando)!= -1) {
-          console.log("COMANDO: " + comando);
-          executar_comando(comando, );
-          return;
-
-        }
-      }
-      */
-
     }
-
 
     /*
     if (comando_ativo) {
@@ -633,8 +643,9 @@ recognition.onresult = function(event) {
     */
 
   }
-
-  falar("não entendi o que você disse.");
+  if (comando_ativo) {
+    falar("não entendi o que você disse. " + COMANDO_ATIVACAO);
+  }
 
 
 };
@@ -642,19 +653,146 @@ recognition.onresult = function(event) {
 
 
 
-inicia_comandos();
-recognition.start();
+/* ************************************************************************************************************************ */
+// inicialização do sistema acontece aqui!
+falar(COMANDO_ATIVACAO, function(){
+  $("body").css("opacity", 1);
+  inicia_comandos();
+  recognition.start();
+});
+/* ************************************************************************************************************************ */
 
 
 
-//carrega_presenca(new Date());
+
+
+
+
+
+
+
+
+
+
+
+
+
+var carrega_pauta = function(data) {
+  selecao_data = data;
+
+  console.log(data);
+
+  falar("Aguarde... Estou verificando a pauta do plenário no dia " + formatDate(selecao_data), function(){
+  
+    var data = formatDate(selecao_data);
+    var ID_ORGAO = "180";
+
+    var url = "http://www.camara.gov.br/SitCamaraWS/Orgaos.asmx/ObterPauta?IDOrgao="+ID_ORGAO+"&datIni="+data+"&datFim="+data+"";
+    console.log(url);
+
+    $.get(url, function(xml){
+
+      window.pauta = JSON.parse(xml2json(xml, ""));
+
+      //var texto_detalhe = [];
+      window.texto_detalhe = [];
+
+      if (!pauta.pauta.reuniao) {
+        texto_detalhe.push("não encontrei nenhum registro de pauta.");
+        texto_detalhe.push("Lembre-se que normalmente, a plenária se reúne de segunda a sexta.");
+
+      } else {
+        pauta = pauta.pauta;
+        var data = pauta["@dataInicial"];
+
+        texto_detalhe.push("A pauta do dia "+data+" possui "+plural_ou_nenhum(pauta.reuniao.length, pauta.reuniao.length + " reunião", pauta.reuniao.length+" reuniões", "nenhuma reunião"))
+
+        for (idx_reuniao in pauta.reuniao) {
+
+          var reuniao = pauta.reuniao[idx_reuniao];
+
+          if (reuniao.estado.trim().toLowerCase() == "em andamento") {
+            texto_detalhe.push(" desde as " + reuniao.horario + " temos " + reuniao.tipo.trim() + " " + reuniao.estado.trim() );
+          } else {
+            texto_detalhe.push("as " + reuniao.horario + " tivemos " + reuniao.tipo.trim() + " " + reuniao.estado.trim());
+          }
+
+
+
+          if (reuniao.proposicoes && reuniao.proposicoes) {
+
+            var proposicao = null;
+            var total_proposicoes = 0;
+            if ($.isArray(reuniao.proposicoes.proposicao)) {
+              //tem varias proposicoes
+              var proposicoes = reuniao.proposicoes.length ? reuniao.proposicoes : reuniao.proposicoes.proposicao;
+
+              total_proposicoes = proposicoes.length;
+              var idx_proposicao = Math.floor((Math.random()*proposicoes.length));
+              proposicao = proposicoes[idx_proposicao];
+              console.log("VARIAS PROPOSICOES - ESCOLHI:", proposicao);
+
+
+            } else {
+              //tem apenas uma proposicao
+              total_proposicoes = 1;
+              proposicao = reuniao.proposicoes.proposicao;
+              console.log("UMA PROPOSICAO", proposicao);
+            }
+
+            if (reuniao.estado.trim().toLowerCase() != "cancelada") {
+              texto_detalhe.push("nesta sessão " + plural_ou_nenhum(total_proposicoes, "foi discutida", "foram discutidas", "não foi discutida") + " " +
+                plural_ou_nenhum(total_proposicoes, total_proposicoes, total_proposicoes, "nenhuma") + " " +
+                plural_ou_nenhum(total_proposicoes, "proposição", "proposições", "proposição"));
+            } else {
+              texto_detalhe.push("nesta sessão " + plural_ou_nenhum(total_proposicoes, "deveria ser discutido", "deveriam ser discutidos", "não foi discutida") + " " +
+                plural_ou_nenhum(total_proposicoes, total_proposicoes, total_proposicoes, "nenhuma") + " " +
+                plural_ou_nenhum(total_proposicoes, "proposição", "proposições", "proposição"));
+            }
+
+
+            if (proposicao) {
+              texto_detalhe.push(
+                plural_ou_nenhum(
+                  total_proposicoes, "a ", "por exemplo a ", "")
+                  + proposicao.sigla.replace("/", " de "));
+              texto_detalhe = texto_detalhe.concat(divide_texto_em_100("com a seguinte ementa: " + proposicao.ementa));
+              //console.log(texto_detalhe);
+            }
+
+          } else {
+            texto_detalhe.push("nenhuma proposição encontrada para essa sessão.");
+          }
+
+        }
+
+
+      }
+
+      texto_detalhe.push("Esta foi a pauta do dia. " + COMANDO_ATIVACAO); // "Que outra informação você gostaria de saber sobre a câmara? Processo legislativo ou curiosidades?")
+
+      falar_mais(texto_detalhe, function(){
+        inicia_comandos();
+        //comando_on();
+      });
+
+    });
+
+
+  });  
+
+};
+
+
+
+
 
 
 var carrega_presenca = function(data) {
   //$.parseXML
   selecao_data = data;
 
-  falar("Aguarde... Estou verificando a presença do dia " + formatDate(selecao_data), function(){
+  falar("Aguarde... Estou verificando a presença no dia " + formatDate(selecao_data), function(){
 
 
     var numLegislatura = "54";
@@ -665,8 +803,9 @@ var carrega_presenca = function(data) {
       window.presenca = JSON.parse(xml2json(xml, ""));
 
       if (!presenca.dia) {
-        falar("não encontrei nenhum registro de presença.");
-        inicia_comandos();
+        falar_mais(["não encontrei nenhum registro de presença.", "Lembre-se que normalmente, a plenária se reúne de segunda a sexta."], function(){
+          inicia_comandos();
+        });
         return;
       }
 
@@ -674,36 +813,42 @@ var carrega_presenca = function(data) {
       total_presenca_partido = {};
       total_presenca_estado = {};
 
+      parlamentares_presentes = [];
+      parlamentares_ausentes = [];
 
 
 
       for (idx_parlamentar in presenca.dia.parlamentares.parlamentar) {
         var parlamentar = presenca.dia.parlamentares.parlamentar[idx_parlamentar];
+
+        var nome_parlamentar = parlamentar.nomeParlamentar.replace("-", " do partido ").replace("/", " ");
         if (!total_presenca_partido[parlamentar.siglaPartido]) 
           total_presenca_partido[parlamentar.siglaPartido] = { "presentes": 0, "ausentes": 0 };
 
         if (!total_presenca_estado[parlamentar.siglaUF]) 
           total_presenca_estado[parlamentar.siglaUF] = { "presentes": 0, "ausentes": 0};
 
-
-
-
         if (parlamentar.descricaoFrequenciaDia == "Presença") {
           total_presentes++;
 
-          total_presenca_partido[parlamentar.siglaPartido]["presente"]++;
-          total_presenca_estado[parlamentar.siglaUF]["presente"]++;
+          total_presenca_partido[parlamentar.siglaPartido]["presentes"]++;
+          total_presenca_estado[parlamentar.siglaUF]["presentes"]++;
+
+          parlamentares_presentes.push(nome_parlamentar);
 
         } else {
 
           total_presenca_partido[parlamentar.siglaPartido]["ausentes"]++;
           total_presenca_estado[parlamentar.siglaUF]["ausentes"]++;
 
+          parlamentares_ausentes.push(nome_parlamentar);
+
         }
       }
 
 
-      console.log(total_presenca_partido, total_presenca_estado);
+
+      console.log(total_presenca_partido, total_presenca_estado, parlamentares_presentes, parlamentares_ausentes);
 
 
       switch(total_presentes) {
@@ -714,17 +859,33 @@ var carrega_presenca = function(data) {
       }
 
 
-      falar("No dia " + presenca.dia.data + " tivemos " + presenca.dia.qtdeSessoesDia + " sessões, com " + total_presentes);
 
-      inicia_comandos();
+      var texto_detalhe = [];
+
+      texto_detalhe.push("No dia " + presenca.dia.data + " tivemos " + presenca.dia.qtdeSessoesDia + " sessões, com " + total_presentes);
+
+      if (parlamentares_presentes.length > 0) {
+        parlamentar_presente = parlamentares_presentes[Math.floor((Math.random()*parlamentares_presentes.length))];
+        texto_detalhe.push("entre os presentes estava o deputado " + parlamentar_presente);
+      }
+      if (parlamentares_ausentes.length > 0) {
+        parlamentar_ausente = parlamentares_ausentes[Math.floor((Math.random()*parlamentares_ausentes.length))];
+        texto_detalhe.push("entre os ausentes estava o deputado " + parlamentar_ausente);
+      }
+
+
+      falar_mais(texto_detalhe, function(){
+        inicia_comandos();
+        falar("Esta foi a lista de presença. " + COMANDO_ATIVACAO);
+      });
+
+
+
 
     });
 
 
   });
-
-
-
 
 
 
