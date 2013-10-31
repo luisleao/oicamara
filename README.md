@@ -7,7 +7,7 @@ Desenvolvido no 1º Hackathon da Câmara Federal em 29/10/2013
 
 
 #Descrição do aplicativo
-Este aplicativo é uma plataforma interativa focada em acessibilidade para fala de informações baseadas em dados abertos.
+Este aplicativo é uma _plataforma interativa focada em acessibilidade_ para fala de informações baseadas em dados abertos.
 Entendemos que o formato e a forma de acesso aos dados abertos representa a vontade política de incluir a participação cidadã do processo legislativo. Mais do que nunca, pensar em acessibilidade e nas diversas possibilidades de tornar as informações acessíveis e compreensíveis para a população deve fazer parte dessa vontade.
 
 Com este aplicativo quero demostrar como fazer isso, utilizando as tecnologias de reconhecimento de fala para que qualquer pessoa possa saber informações da Câmara Federal.
