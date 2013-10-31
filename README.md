@@ -3,6 +3,8 @@
 
 Desenvolvido no 1º Hackathon da Câmara Federal em 29/10/2013
 
+![screenshot](https://raw.github.com/luisleao/oicamara/master/docs/screen_0.png)
+
 
 #Descrição do aplicativo
 Este aplicativo é uma plataforma interativa focada em acessibilidade para fala de informações baseadas em dados abertos.
@@ -49,6 +51,7 @@ Como um aplicativo acessível, seria importante conseguir incluir o streaming da
 #Quero remixar este aplicativo e utilizar outros dados
 No arquivo main.js você pode editar a variável "comandos", ela é um dicionário que segue o modelo abaixo.
 
+```
 	{
 		"nome": "NOME DO COMANDO A SER EXECUTADO",
 		"alias": [/oi câmara/g, new RegExp("artigo\\s([\\d]*)º?\\sdo\\sregimento")], //expressões regulares
@@ -62,19 +65,20 @@ No arquivo main.js você pode editar a variável "comandos", ela é um dicionár
 
 		}
 	}
+```
 
 Crie quantos itens desejar e não esqueça de incluí-los na função "inicia_comandos". Ela funciona como a raiz de comandos da sua aplicação e contém as principais palavras-chave que serão acionadas ao receber as transcrições da API de reconhecimento de voz.
 
 Se quiser que seja falado algum texto utilize uma das funções conforme a seguir:
 
 
-
+```
 	falar(TEXTO, callback); //para texto simples - até 100 caracteres.
 	falar_mais(ARRAY_DE_STRINGS, callback); //textos longos.
 
 	divide_texto_em_100(TEXTO_LONGO); //retorna um array com as palavras separadas em grupos de até 100 caracteres
 	plural_ou_nenhum(NUMERO, STRING_SINGULAR, STRING_PLURAL, STRING_ZERO) //para escrever textos com variação de número
-
+```
 
 
 
@@ -93,7 +97,6 @@ webspeech API: padrão aberto para implementação de reconhecimento de voz, doc
 
 
 
-![screenshot](https://raw.github.com/luisleao/oicamara/master/docs/screen_0.png)
 
 
 
