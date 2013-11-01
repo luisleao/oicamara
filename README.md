@@ -27,9 +27,9 @@ Para distribuí-lo, publique o código fonte (pasta webapp compactada) na [Chrom
 Como foi desenvolvivo?
 ----------------------
 
-A API de reconhecimento de voz (Web Speech API), documentada no w3c em https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html foi implementada no navegador Google Chrome e disponibilizada ao público no início de 2013. Ela representa uma mudança no modelo de uso do reconhecimento de voz em sites web, permitindo o uso totalmente através de javascript, sem vínculo com a interface. Assim, novas possibilidades surgiram, como demonstrado nesse aplicativo.
+A API de reconhecimento de voz (Web Speech API), [documentada no w3c](https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html) foi implementada no navegador Google Chrome e disponibilizada ao público no início de 2013. Ela representa uma mudança no modelo de uso do reconhecimento de voz em sites web, permitindo o uso totalmente através de javascript, sem vínculo com a interface. Assim, novas possibilidades surgiram, como demonstrado nesse aplicativo.
 
-Desde então, tenho estudado formas de uso dessa API, integrando inclusive com automação residencial (apresentação "oi casa" realizada no Meetup de Front-End dia 26/08/2013 do Google Developers Group, capítulo São Paulo, na qual sou um dos coordenadores).
+Desde então, tenho estudado formas de uso dessa API, integrando inclusive com **automação residencial** (apresentação "oi casa" realizada no Meetup de Front-End dia 26/08/2013 do [Google Developers Group, capítulo São Paulo](https://developers.google.com/groups/chapter/102774871279745079139/), na qual sou um dos coordenadores).
 
 O código do "oi casa" pode ser acessado em https://github.com/luisleao/oicasa
 
@@ -38,7 +38,6 @@ O código do "oi casa" pode ser acessado em https://github.com/luisleao/oicasa
 A principal diferença do "oi casa" para o "oi câmara" é a forma como foi implementada a lista de comandos, agora baseada em expressões regulares e com uma função de callback, que é acionada quando uma das funções valida a transcrição encontrada. Ele permite também criar comandos hierárquicos (por exemplo: pedir confirmações ou informações complementares). Além disso, não há necessidade de falar o comando de ativação "oi câmara" para executar os comandos raiz, mas lembre-se de que é importante criar um comando com mais de uma palavra para que não ocorra reconhecimentos indevidos. 
 
 Outra diferença importante é que o sistema agora ignora as transcrição enquanto estiver falando algum texto. Isso significa que o próprio sistema não vai se retroalimentar e gerar falsos comandos.
-
 
 
 ##Os dados da Câmara Federal
