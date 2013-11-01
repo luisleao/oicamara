@@ -1,7 +1,7 @@
 "oi câmara"
 ===========
 
-Desenvolvido no [http://www2.camara.leg.br/responsabilidade-social/edulegislativa/hackathon/hackathon-maratona-hacker](**1º Hackathon da Câmara Federal**) em 29/10/2013
+Desenvolvido no [**1º Hackathon da Câmara Federal**](http://www2.camara.leg.br/responsabilidade-social/edulegislativa/hackathon/hackathon-maratona-hacker) em 29/10/2013
 
 ![screenshot](https://raw.github.com/luisleao/oicamara/master/docs/screen_0.png)
 
@@ -20,7 +20,7 @@ Você pode utilizá-lo de duas formas:
 - como um aplicativo interativo
 
 Este é um aplicativo Chrome (Chrome Packaged App)!
-Para distribuí-lo, publique o código fonte (pasta webapp compactada) na [https://chrome.google.com/webstore/developer/dashboard](Chrome Web Store). Você também pode adicionar manualmente o através do link "chrome://extensions", desde que o "modo de desenvolvedor" esteja ativo.
+Para distribuí-lo, publique o código fonte (pasta webapp compactada) na [Chrome Web Store](https://chrome.google.com/webstore/developer/dashboard). Você também pode adicionar manualmente o através do link "chrome://extensions", desde que o "modo de desenvolvedor" esteja ativo.
 
 
 
@@ -40,7 +40,7 @@ Outra diferença importante é que o sistema agora ignora as transcrição enqua
 
 
 ##Os dados da Câmara Federal
-Nesse primeiro momento utilizamos os [http://www2.camara.leg.br/transparencia/dados-abertos](dados da Câmara Federal) para essa instalação.
+Nesse primeiro momento utilizamos os [dados da Câmara Federal](http://www2.camara.leg.br/transparencia/dados-abertos) para essa instalação.
 Ele consulta, na versão beta, a **pauta do plenário**, a **presença dos parlamentares** em uma determinada data, além de **curiosidades sobre a casa**.
 
 Acreditamos que mais informações podem ser adicionadas, relacionadas ao processo legislativo e cotas parlamentares, mas isso significará 
