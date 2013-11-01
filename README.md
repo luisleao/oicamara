@@ -1,7 +1,7 @@
 "oi câmara"
 ===========
 
-Desenvolvido no 1º Hackathon da Câmara Federal em 29/10/2013
+Desenvolvido no [http://www2.camara.leg.br/responsabilidade-social/edulegislativa/hackathon/hackathon-maratona-hacker](**1º Hackathon da Câmara Federal**) em 29/10/2013
 
 ![screenshot](https://raw.github.com/luisleao/oicamara/master/docs/screen_0.png)
 
