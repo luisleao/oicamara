@@ -98,6 +98,7 @@ var set_relogio = function(){
     console.log("REINICIANDO RECONHECIMENTO!");
     inicia_comandos();
     recognition.start();
+    recognizing = true;
 
   }
   
@@ -140,7 +141,9 @@ var comandos = {
       var textos = [
         "Qual informação você gostaria de saber sobre a câmara?",
         "Projetos de lei, presença dos deputados ou pauta do plenário.",
-        "Se quiser ouvir informações sobre tempo, diga por exemplo, tempo em brasília.",
+        "Quer ouvir sobre curiosidades da Câmara? Diga curiosidades",
+        "Temos também informações sobre tempo, diga por exemplo, tempo em brasília.",
+        "Se quiser encerrar este aplicativo, diga fechar câmara."
       ];
 
       //recognition.stop();
@@ -158,7 +161,7 @@ var comandos = {
 
   "tchau_camara": {
     "nome": "Tchau câmara",
-    "alias": [/xiau câmara/g, /chow câmara/g, /obrigado câmara/g, /até logo câmara/g, /até mais câmara/g],
+    "alias": [/fechar câmara/g],
     "action": function(texto, tag, regex_result){
 
       var textos = [
@@ -221,10 +224,10 @@ var comandos = {
       var texto = [];
       if (regex_result > 282) {
         texto.push("O regimento interno da Câmara possui apenas 282 artigos.");
-        texto.push("De qualquer forma, esta função ainda não foi implementada");
+        texto.push("De qualquer forma, esta função ainda não foi implementada.");
       } else {
-        texto.push("Não consigo ler o artigo "+regex_result+"º do regimento.");
-        texto.push("Esta função ainda não foi implementada");
+        texto.push("Não consigo ler o artigo "+regex_result+"º do regimento interno.");
+        texto.push("Esta função será implementada em breve.");
       }
       texto.push(COMANDO_ATIVACAO);
 
@@ -243,6 +246,26 @@ var comandos = {
       inicia_comandos();
     }
  },
+
+ "baixar_codigo": {
+    "nome": "Baixar o código",
+    "alias": [/baixar o código/g, /baixar código/g],
+    "action": function(texto, tag, regex_result) {
+
+      var texto = [];
+      texto.push("Este aplicativo possui uma licença livre. Você pode baixá-lo e remixá-lo a vontade!");
+      texto.push("Para mais informações acesse guitirrâb ponto com, barra luis leão, barra, oi câmara");
+      texto.push(COMANDO_ATIVACAO);
+
+      falar_mais(texto, function(){
+        inicia_comandos();
+      });
+
+
+
+    }
+ },
+
 
  /* ************************************************************************************************************************ */
 
@@ -476,9 +499,12 @@ var comandos = {
     "action": function(texto, tag, regex_result) {
 
       var idx = Math.floor((Math.random()*curiosidades.length));
-      falar_mais(divide_texto_em_100(curiosidades[idx]), function(){
+      var texto = [];
+      //texto.push(COMANDO_ATIVACAO);
+      falar_mais(texto, function(){
 
         falar("Você gostaria de ouvir mais uma curiosidade ou quer retornar?", function(){
+
           inicia_comandos();
           comandos_atuais.unshift({
             "nome": "mais_uma_curiosidade",
@@ -495,7 +521,6 @@ var comandos = {
               comandos["oi_camara"].action()
             }
           });
-
           comando_on();
         });
 
@@ -577,6 +602,7 @@ var inicia_comandos = function(){
   comandos_atuais.unshift(comandos["horas"]);
   comandos_atuais.unshift(comandos["tempo"]);
   comandos_atuais.unshift(comandos["ligar_pra_casa"]);
+  comandos_atuais.unshift(comandos["baixar_codigo"]);
   comandos_atuais.unshift(comandos["tchau_camara"]);
 
 
