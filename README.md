@@ -7,7 +7,7 @@ Desenvolvido no 1º Hackathon da Câmara Federal em 29/10/2013
 
 
 #Descrição do aplicativo
-Este aplicativo é uma *plataforma interativa focada em acessibilidade* para fala de informações baseadas em dados abertos.
+Este aplicativo é uma **plataforma interativa focada em acessibilidade** para fala de informações baseadas em dados abertos.
 Entendemos que o formato e a forma de acesso aos dados abertos representa a vontade política de incluir a participação cidadã do processo legislativo. Mais do que nunca, pensar em acessibilidade e nas diversas possibilidades de tornar as informações acessíveis e compreensíveis para a população deve fazer parte dessa vontade.
 
 Com este aplicativo quero demostrar como fazer isso, utilizando as tecnologias de reconhecimento de fala para que qualquer pessoa possa saber informações da Câmara Federal.
@@ -41,7 +41,7 @@ Outra diferença importante é que o sistema agora ignora as transcrição enqua
 
 ##Os dados da Câmara Federal
 Nesse primeiro momento utilizamos os [http://www2.camara.leg.br/transparencia/dados-abertos](dados da Câmara Federal) para essa instalação.
-Ele consulta, na versão beta, a *pauta do plenário*, a *presença dos parlamentares* em uma determinada data, além de *curiosidades sobre a casa*.
+Ele consulta, na versão beta, a **pauta do plenário**, a **presença dos parlamentares** em uma determinada data, além de **curiosidades sobre a casa**.
 
 Acreditamos que mais informações podem ser adicionadas, relacionadas ao processo legislativo e cotas parlamentares, mas isso significará 
 
@@ -54,10 +54,10 @@ Ainda tenho previsto a implementação da tramitação por dia, além da consult
 
 Baixe este repositório e altera os arquivos "main.js". Nele você pode editar a variável "comandos", ela é um dicionário e cada chave segue o modelo abaixo.
 
-```
+```javascript
 {
 	"nome": "NOME DO COMANDO A SER EXECUTADO",
-	"alias": [/oi câmara/g, new RegExp("artigo\\s([\\d]*)º?\\sdo\\sregimento")], //expressões regulares
+	"alias": [/oi câmara/g, new RegExp("artigo\\s([\\d]**)º?\\sdo\\sregimento")], //expressões regulares
 	"action": function(texto, tag, regex_result) {
 		
 		//texto = texto encontrado
@@ -76,7 +76,7 @@ Crie quantos itens desejar e não esqueça de incluí-los na função "inicia_co
 Se quiser que seja falado algum texto utilize uma das funções conforme a seguir:
 
 
-```
+```javascript
 falar(TEXTO, callback); //para texto simples - até 100 caracteres.
 falar_mais(ARRAY_DE_STRINGS, callback); //textos longos.
 
@@ -87,7 +87,7 @@ plural_ou_nenhum(NUMERO, STRING_SINGULAR, STRING_PLURAL, STRING_ZERO) //para esc
 
 
 Para retomar o reconhecimento de voz, utilize os comandos abaixo
-```
+```javascript
 inicia_comandos(); //para reativar a lista de comandos disponíveis
 
 ```
