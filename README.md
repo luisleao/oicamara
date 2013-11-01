@@ -51,6 +51,16 @@ Acreditamos que mais informações podem ser adicionadas, relacionadas ao proces
 Ainda tenho previsto a implementação da tramitação por dia, além da consulta do regimento interno.
 
 
+##Dificuldades no desenvolvimento
+Principalmente sobre o entendimento dos dados da Câmara Federal e na tradução desses dados "técnicos" para uma linguagem mais informal.
+
+Encontrei algumas inconsistências, como por exemplo o formato de identificação de propostas no webservice: algumas chamadas separam a identificação das propostas (tipo, número e ano) e outros deixam o dado unificado (TIPO-NUMERO/ANO). Senti falta de alguns agrupamentos e filtros nas consultas no que se refere a tramitação e as consultas de presença poderiam permitir listar modelos mais simples.
+
+Sobre o desenvolvimento, o reconhecimento de voz não é 100% preciso e isso dificulta na identificação dos comandos e passagens de parâmetros em comandos. Nesse caso, o uso das expressões regulares ajuda a minimizar essa questão.
+
+Com relação a equipe, recebi ajuda de algumas pessoas, como a Lívia Ascava, que ajudou com os textos e as "curiosidades" da Câmara e o Pedro Markun, sempre solícito a gerar um ruído de fundo para testar a aplicação.
+
+
 
 Quero remixar este aplicativo e utilizar outros dados
 -----------------------------------------------------

@@ -138,11 +138,10 @@ var comandos = {
       ];
 
       falar_mais(textos, function() {
-
         inicia_comandos();
         comandos_atuais.unshift(comandos["cancelar"]);
-        comando_on();
-      
+        setTimeout(comando_on, 100);
+        //comando_on();
       });
 
     }
@@ -157,6 +156,18 @@ var comandos = {
       falar(COMANDO_ATIVACAO);
     }
   },
+
+
+  "oi_casa": {
+    "nome": "EASTEREGG: oi casa",
+    "alias": [/oi casa/g], //"cancelar", "cancela"
+    "action": function(texto, tag, regex_result) {
+      falar_mais(["Este não é o aplicativo, oi casa. ","Se quiser mais informações acesse guitirrâb ponto com, barra luis leão, barra, oi casa", COMANDO_ATIVACAO], function(){
+        comando_off();
+      });
+    }
+  },
+
 
 
  /* ************************************************************************************************************************ */
@@ -524,7 +535,7 @@ var inicia_comandos = function(){
   comandos_atuais.unshift(comandos["leitura_artigo_regimento"]);
   comandos_atuais.unshift(comandos["curiosidades"]);
 
-
+  comandos_atuais.unshift(comandos["oi_casa"]);
   comandos_atuais.unshift(comandos["horas"]);
   comandos_atuais.unshift(comandos["tempo"]);
 
