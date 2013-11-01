@@ -6,10 +6,6 @@ var falando = false;
 
 var last_talk = null;
 
-//TODO: acertar bug no 'nao entendi o que voce disse'
-
-
-
 
 
 

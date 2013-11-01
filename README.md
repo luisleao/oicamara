@@ -24,9 +24,8 @@ Este é um aplicativo Chrome (Chrome Packaged App)!
 Para distribuí-lo, publique o código fonte (pasta webapp compactada) na [Chrome Web Store](https://chrome.google.com/webstore/developer/dashboard). Você também pode adicionar manualmente o através do link "chrome://extensions", desde que o "modo de desenvolvedor" esteja ativo.
 
 
-
-#Como foi desenvolvivo?
------------------------
+Como foi desenvolvivo?
+----------------------
 
 A API de reconhecimento de voz (Web Speech API), documentada no w3c em https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html foi implementada no navegador Google Chrome e disponibilizada ao público no início de 2013. Ela representa uma mudança no modelo de uso do reconhecimento de voz em sites web, permitindo o uso totalmente através de javascript, sem vínculo com a interface. Assim, novas possibilidades surgiram, como demonstrado nesse aplicativo.
 
@@ -52,8 +51,9 @@ Ainda tenho previsto a implementação da tramitação por dia, além da consult
 
 
 
+Quero remixar este aplicativo e utilizar outros dados
+-----------------------------------------------------
 
-#Quero remixar este aplicativo e utilizar outros dados
 
 Baixe este repositório e altera os arquivos "main.js". Nele você pode editar a variável "comandos", ela é um dicionário e cada chave segue o modelo abaixo.
 
@@ -87,8 +87,6 @@ divide_texto_em_100(TEXTO_LONGO); //retorna um array com as palavras separadas e
 plural_ou_nenhum(NUMERO, STRING_SINGULAR, STRING_PLURAL, STRING_ZERO) //para escrever textos com variação de número
 ```
 
-
-
 Para retomar o reconhecimento de voz, utilize os comandos abaixo
 ```javascript
 inicia_comandos(); //para reativar a lista de comandos disponíveis
@@ -97,14 +95,18 @@ inicia_comandos(); //para reativar a lista de comandos disponíveis
 
 
 ##Dicas de acessibilidade
+- lembre-se de adicionar a mensagem final "Diga, oi câmara, para ouvir as opções possíveis.". Ela indica que o comando foi finalizado e que ele está no início do programa e pode solicitar um novo comando.
+- ao criar comandos com hierarquia, sempre que possível indique a informação do passo anterior. Para que ele lembre o que falou e complemente a informação necessária para o comando.
+- não crie níveis muito completos!
+
+
 
 
 
 #tecnologias utilizadas
-webspeech API: padrão aberto para implementação de reconhecimento de voz, documentado no w3c
-
-
-
+- webspeech API: padrão aberto para implementação de reconhecimento de voz, documentado no w3c
+- chrome packaged app: para criação de um aplicativo web, com funcionalidades de aplicativo nativo
+- google translate TTS: (API não documentada)
 
 
 
