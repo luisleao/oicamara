@@ -92,7 +92,6 @@ var falar = function(texto, callback) {
 
   audio_especial.src = "http://translate.google.com.br/translate_tts?ie=UTF-8&tl=pt&total="+texto.length+"&q=" + texto;
   audio_especial.playbackRate = 2; //1.7;
-  //console.log(audio_especial.src);
   audio_especial.play();
 
 }

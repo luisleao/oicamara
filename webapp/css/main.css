@@ -42,6 +42,7 @@ body, html {
 
 
 body {
+  cursor: none;
   background: black;
   color: #fff;
 

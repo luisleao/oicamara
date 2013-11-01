@@ -41,6 +41,7 @@ audio_inativo.src = "media/inativo.mp3";
 
 var comando_on = function() {
   // indicativo visual ON
+  if (!recognizing) recognition.start();
   comando_ativo = true;
   audio_ativo.currentTime = 0;
   audio_ativo.play();
@@ -137,11 +138,14 @@ var comandos = {
         "Se quiser ouvir informações sobre tempo, diga por exemplo, tempo em brasília.",
       ];
 
+      recognition.stop();
+      recognizing = false;
+
       falar_mais(textos, function() {
         inicia_comandos();
         comandos_atuais.unshift(comandos["cancelar"]);
-        setTimeout(comando_on, 100);
-        //comando_on();
+        //setTimeout(comando_on, 100);
+        comando_on();
       });
 
     }
@@ -205,6 +209,15 @@ var comandos = {
     }
  },
 
+
+ "ligar_pra_casa": {
+    "nome": "Ligar pra casa",
+    "alias": [/ligar para casa/g, /ligar para casa/g],
+    "action": function(texto, tag, regex_result) {
+      falar("após o sinal, diga seu nome e a cidade de onde está falando...");
+      inicia_comandos();
+    }
+ },
 
  /* ************************************************************************************************************************ */
 
@@ -473,7 +486,7 @@ var comandos = {
 
  "horas": {
     "nome": "Horas do Dia",
-    "alias": [/quantas horas/g, /que horas são/g, /oras/g], //"quantas horas", "que horas são"
+    "alias": [/quantas horas/g, /que horas são/g, /horas/g, /oras/g], //"quantas horas", "que horas são"
     "action": function(texto, tag, regex_result) {
 
       var d = new Date();
@@ -538,6 +551,7 @@ var inicia_comandos = function(){
   comandos_atuais.unshift(comandos["oi_casa"]);
   comandos_atuais.unshift(comandos["horas"]);
   comandos_atuais.unshift(comandos["tempo"]);
+  comandos_atuais.unshift(comandos["ligar_pra_casa"]);
 
 }
 
