@@ -23,7 +23,7 @@ var falando = false;
 
 
 var last_talk = null;
-
+var last_recognizing = null;
 
 
 
@@ -41,7 +41,8 @@ audio_inativo.src = "media/inativo.mp3";
 
 var comando_on = function() {
   // indicativo visual ON
-  if (!recognizing) recognition.start();
+  //if (!recognizing) recognition.start();
+  last_recognizing = new Date();
   comando_ativo = true;
   audio_ativo.currentTime = 0;
   audio_ativo.play();
@@ -90,12 +91,18 @@ var set_relogio = function(){
 
 
   // força retomar o reconhecimento de voz
-  if (!falando && !recognizing || (last_talk && Date.now() - last_talk > 10000)) {
+  console.log((!falando && !recognizing), (last_talk && falando && (Date.now() - last_talk)> 10000));
+
+
+  if ((!falando && !recognizing) || (last_talk && falando && Date.now() - last_talk > 10000)) {
     falando = false; last_talk = null;
+    //recognition.stop();
     console.log("REINICIANDO RECONHECIMENTO!");
     inicia_comandos();
     recognition.start();
+
   }
+  
 
 };
 
@@ -138,14 +145,34 @@ var comandos = {
         "Se quiser ouvir informações sobre tempo, diga por exemplo, tempo em brasília.",
       ];
 
-      recognition.stop();
-      recognizing = false;
+      //recognition.stop();
+      //recognizing = false;
 
       falar_mais(textos, function() {
         inicia_comandos();
         comandos_atuais.unshift(comandos["cancelar"]);
         //setTimeout(comando_on, 100);
         comando_on();
+      });
+
+    }
+  },
+
+  "tchau_camara": {
+    "nome": "Tchau câmara",
+    "alias": [/xiau câmara/g, /chow câmara/g, /obrigado câmara/g, /até logo câmara/g, /até mais câmara/g],
+    "action": function(texto, tag, regex_result){
+
+      var textos = [
+        "Por hoje é só pessoal.",
+        "Até mais!"
+      ];
+
+      recognition.stop();
+      recognizing = false;
+
+      falar_mais(textos, function() {
+        window.close();
       });
 
     }
@@ -552,6 +579,9 @@ var inicia_comandos = function(){
   comandos_atuais.unshift(comandos["horas"]);
   comandos_atuais.unshift(comandos["tempo"]);
   comandos_atuais.unshift(comandos["ligar_pra_casa"]);
+  comandos_atuais.unshift(comandos["tchau_camara"]);
+
+
 
 }
 
@@ -682,8 +712,11 @@ recognition.onresult = function(event) {
     */
 
   }
-  if (comando_ativo) {
-    falar("não entendi o que você disse. " + COMANDO_ATIVACAO);
+  if (comando_ativo && last_recognizing && (Date.now() - last_recognizing > 5000)) {
+    falar("Não entendi o que você disse. " + COMANDO_ATIVACAO, function(){
+      inicia_comandos();
+    });
+
   }
 
 
@@ -744,7 +777,7 @@ var carrega_pauta = function(data) {
         pauta = pauta.pauta;
         var data = pauta["@dataInicial"];
 
-        texto_detalhe.push("A pauta do dia "+data+" possui "+plural_ou_nenhum(pauta.reuniao.length, pauta.reuniao.length + " reunião", pauta.reuniao.length+" reuniões", "nenhuma reunião"))
+        texto_detalhe.push("A pauta do dia "+data+" possui "+plural_ou_nenhum(pauta.reuniao.length, pauta.reuniao.length + " sessão", pauta.reuniao.length+" sessões", "nenhuma sessão"))
 
         for (idx_reuniao in pauta.reuniao) {
 

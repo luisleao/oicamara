@@ -72,16 +72,25 @@ var falar = function(texto, callback) {
   last_talk = Date.now();
 
   recognition.stop();
+  recognizing = false;
 
   console.log("FALANDO: ", texto);
 
   var audio_especial = new Audio();
   audio_especial.addEventListener('ended', function(){
 
-    if (!recognizing)
-      recognition.start();
-
     falando = false;
+    if (!recognizing) {
+
+      try {
+        recognition.start();
+      } catch(err) {
+
+      }
+
+      recognizing = true;
+    }
+
     if (callback) { 
       callback();
     } else {
@@ -91,7 +100,7 @@ var falar = function(texto, callback) {
 
 
   audio_especial.src = "http://translate.google.com.br/translate_tts?ie=UTF-8&tl=pt&total="+texto.length+"&q=" + texto;
-  audio_especial.playbackRate = 2; //1.7;
+  audio_especial.playbackRate = 1.85; //2; //1.7;
   audio_especial.play();
 
 }
