@@ -27,7 +27,9 @@ Para distribuí-lo, publique o código fonte (pasta webapp compactada) na [Chrom
 Como foi desenvolvivo?
 ----------------------
 
-A API de reconhecimento de voz (Web Speech API), [documentada no w3c](https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html) foi implementada no navegador Google Chrome e disponibilizada ao público no início de 2013. Ela representa uma mudança no modelo de uso do reconhecimento de voz em sites web, permitindo o uso totalmente através de javascript, sem vínculo com a interface. Assim, novas possibilidades surgiram, como demonstrado nesse aplicativo.
+A API de reconhecimento de voz (Web Speech API), [documentada no w3c](https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html) foi implementada no navegador Google Chrome (a partir da versão 25) e disponibilizada ao público no início de 2013. Ela representa uma mudança no modelo de uso do reconhecimento de voz em sites web, permitindo o uso totalmente através de javascript, sem vínculo com a interface. Assim, novas possibilidades surgiram, como demonstrado nesse aplicativo.
+
+Para exemplos de uso dessa API acesse http://updates.html5rocks.com/2013/01/Voice-Driven-Web-Apps-Introduction-to-the-Web-Speech-API
 
 Desde então, tenho estudado formas de uso dessa API, integrando inclusive com **automação residencial** (apresentação "oi casa" realizada no Meetup de Front-End dia 26/08/2013 do [Google Developers Group, capítulo São Paulo](https://developers.google.com/groups/chapter/102774871279745079139/), na qual sou um dos coordenadores).
 
