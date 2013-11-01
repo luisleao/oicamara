@@ -37,7 +37,7 @@ O código do "oi casa" pode ser acessado em https://github.com/luisleao/oicasa
 
 
 ##O que mudou?
-A principal diferença do "oi casa" para o "oi câmara" é a forma como foi implementada a lista de comandos, agora baseada em expressões regulares e com uma função de callback, que é acionada quando uma das funções valida a transcrição encontrada. Ele permite também criar comandos hierárquicos (por exemplo: pedir confirmações ou informações complementares). Além disso, não há necessidade de falar o comando de ativação "oi câmara" para executar os comandos raiz, mas lembre-se de que é importante criar um comando com mais de uma palavra para que não ocorra reconhecimentos indevidos. 
+A principal diferença do "oi casa" para o "oi câmara" é a forma como foi implementada a lista de comandos, agora baseada em expressões regulares e com uma função de *callback*, que é acionada quando uma das funções valida a transcrição encontrada. Ele permite também criar comandos hierárquicos (por exemplo: pedir confirmações ou informações complementares). Além disso, não há necessidade de falar o comando de ativação "oi câmara" para executar os comandos raiz (ele funciona como um comando de ajuda e quando acionado indica que o usuário deve falar um dos comandos previstos), mas lembre-se de que é importante criar um comando com mais de uma palavra para que não ocorra reconhecimentos indevidos. 
 
 Outra diferença importante é que o sistema agora ignora as transcrição enquanto estiver falando algum texto. Isso significa que o próprio sistema não vai se retroalimentar e gerar falsos comandos.
 
@@ -91,6 +91,8 @@ plural_ou_nenhum(NUMERO, STRING_SINGULAR, STRING_PLURAL, STRING_ZERO) //para esc
 Para retomar o reconhecimento de voz, utilize os comandos abaixo
 ```javascript
 inicia_comandos(); //para reativar a lista de comandos disponíveis
+comando_on(); //ativa a repeção imediata de comandos, tocando um aviso sonoro e indicar para o usuário que ele deve falar um comando IMEDIATAMENTE
+comando_off(); //desativa a recepção de comandos
 
 ```
 
