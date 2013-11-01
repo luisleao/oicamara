@@ -3,7 +3,7 @@
 
 Desenvolvido no [**1º Hackathon da Câmara Federal**](http://www2.camara.leg.br/responsabilidade-social/edulegislativa/hackathon/hackathon-maratona-hacker) em 29/10/2013
 
-Baixe o aplicativo: [https://chrome.google.com/webstore/detail/oi-câmara/fmmbgnkciddfgghniaonobpdfgipdejb](https://chrome.google.com/webstore/detail/oi-c%C3%A2mara/fmmbgnkciddfgghniaonobpdfgipdejb)
+Baixe o aplicativo: [https://chrome.google.com/webstore/detail/oi-câmara/fmmbgnkciddfgghniaonobpdfgipdejb](http://bit.ly/17wgBmn)
 
 ![screenshot](https://raw.github.com/luisleao/oicamara/master/docs/screen_0.png)
 
