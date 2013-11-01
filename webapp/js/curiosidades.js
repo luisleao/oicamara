@@ -1,3 +1,21 @@
+/*
+
+Copyright 2013 Luis Leao All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+*/
+
 var curiosidades = [
 
 	"A Câmara foi criada pela Constituição de 1824 com a missão de, em conjunto com o Senado, elaborar a legislação do Império, resolver as dúvidas sobre a sucessão da Coroa, fixar anualmente as despesas públicas e repartir as contribuições diretas, entre outras atribuições. A sessão de abertura da primeira legislatura da Assembleia Geral Legislativa .reunião conjunta da Câmara dos Deputados e do Senado ocorreu em 6 de maio de 1826.",
