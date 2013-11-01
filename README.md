@@ -7,10 +7,11 @@ Desenvolvido no [**1º Hackathon da Câmara Federal**](http://www2.camara.leg.br
 
 
 #Descrição do aplicativo
-Este aplicativo é uma **plataforma interativa focada em acessibilidade** para fala de informações baseadas em dados abertos.
-Entendemos que o formato e a forma de acesso aos dados abertos representa a vontade política de incluir a participação cidadã do processo legislativo. Mais do que nunca, pensar em acessibilidade e nas diversas possibilidades de tornar as informações acessíveis e compreensíveis para a população deve fazer parte dessa vontade.
+Este aplicativo é uma **plataforma interativa focada em acessibilidade** das informações baseadas em dados abertos, a ser a utilizado por pessoas com visão comprometida.
 
-Com este aplicativo quero demostrar como fazer isso, utilizando as tecnologias de reconhecimento de fala para que qualquer pessoa possa saber informações da Câmara Federal.
+Entendemos que o formato e a **forma de acesso aos dados abertos representa a vontade política** de incluir a participação cidadã do processo legislativo. Mais do que nunca, pensar em acessibilidade e nas diversas possibilidades de tornar as informações acessíveis e compreensíveis para a população deve fazer parte dessa vontade.
+
+Com este aplicativo quero demostrar como fazer isso, utilizando as tecnologias de **reconhecimento de fala** para que qualquer pessoa possa saber informações da Câmara Federal.
 
 Além disso, este aplicativo pode ser remixado com poucas alterações e para utilizar outras informações.
 
@@ -25,6 +26,8 @@ Para distribuí-lo, publique o código fonte (pasta webapp compactada) na [Chrom
 
 
 #Como foi desenvolvivo?
+-----------------------
+
 A API de reconhecimento de voz (Web Speech API), documentada no w3c em https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html foi implementada no navegador Google Chrome e disponibilizada ao público no início de 2013. Ela representa uma mudança no modelo de uso do reconhecimento de voz em sites web, permitindo o uso totalmente através de javascript, sem vínculo com a interface. Assim, novas possibilidades surgiram, como demonstrado nesse aplicativo.
 
 Desde então, tenho estudado formas de uso dessa API, integrando inclusive com automação residencial (apresentação "oi casa" realizada no Meetup de Front-End dia 26/08/2013 do Google Developers Group, capítulo São Paulo, na qual sou um dos coordenadores).
