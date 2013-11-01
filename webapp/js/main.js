@@ -91,9 +91,7 @@ var set_relogio = function(){
 
 
   // força retomar o reconhecimento de voz
-  console.log((!falando && !recognizing), (last_talk && falando && (Date.now() - last_talk)> 10000));
-
-
+  //console.log((!falando && !recognizing), (last_talk && falando && (Date.now() - last_talk)> 10000));
   if ((!falando && !recognizing) || (last_talk && falando && Date.now() - last_talk > 10000)) {
     falando = false; last_talk = null;
     //recognition.stop();
@@ -713,6 +711,7 @@ recognition.onresult = function(event) {
 
   }
   if (comando_ativo && last_recognizing && (Date.now() - last_recognizing > 5000)) {
+    comando_off();
     falar("Não entendi o que você disse. " + COMANDO_ATIVACAO, function(){
       inicia_comandos();
     });
