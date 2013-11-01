@@ -112,9 +112,7 @@ comando_off(); //desativa a recepção de comandos
 - google translate TTS: (API não documentada)
 
 
-
-
-
+[Wheelchair User](http://thenounproject.com/noun/wheelchair-user/#icon-No21977) designed by [NATAPON CHANTABUTR](http://thenounproject.com/pique) from The Noun Project.
 
 
 LICENSE
