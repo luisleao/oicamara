@@ -17,5 +17,6 @@ limitations under the License.
 */
 
 chrome.app.runtime.onLaunched.addListener(function() {
-	chrome.app.window.create('main.html', {'state': 'fullscreen' });
+	chrome.app.window.create('main.html');
+	//chrome.app.window.create('main.html', {'state': 'fullscreen' });
 });

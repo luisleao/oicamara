@@ -60,7 +60,7 @@ var comando_off = function(nao_inicia) {
 
 
 
-var COMANDO_ATIVACAO = "Diga, oi câmara, para ouvir as opções possíveis.";
+var COMANDO_ATIVACAO = "Diga, oi câmara, para ouvir as opções disponíveis."; //possíveis
 
 
 
@@ -88,25 +88,26 @@ var set_relogio = function(){
   var d = new Date();
   var data_hora = d.getHours() + ":" + pad(d.getMinutes(), 2);
   $(".relogio").text(data_hora);
+};
 
+var reset_fala = function(){
 
   // força retomar o reconhecimento de voz
   //console.log((!falando && !recognizing), (last_talk && falando && (Date.now() - last_talk)> 10000));
-  if ((!falando && !recognizing) || (last_talk && falando && Date.now() - last_talk > 10000)) {
-    falando = false; last_talk = null;
-    //recognition.stop();
+  //if ((!falando && !recognizing) || (last_talk && falando && Date.now() - last_talk > 10000)) {
     console.log("REINICIANDO RECONHECIMENTO!");
+    falando = false;
+    last_talk = null;
     inicia_comandos();
-    recognition.start();
+    try { recognition.start(); } catch(err) {}
     recognizing = true;
-
-  }
-  
+  //}
 
 };
 
 // intervalo para relogio na tela e verificacao de erros no TTS
 setInterval(set_relogio, 1000);
+
 
 
 var selecao_data;
@@ -140,7 +141,7 @@ var comandos = {
 
       var textos = [
         "Qual informação você gostaria de saber sobre a câmara?",
-        "Projetos de lei, presença dos deputados ou pauta do plenário.",
+        "pauta do plenário ou presença dos deputados.",
         "Quer ouvir sobre curiosidades da Câmara? Diga curiosidades",
         "Temos também informações sobre tempo, diga por exemplo, tempo em brasília.",
         "Se quiser encerrar este aplicativo, diga fechar câmara."
@@ -217,7 +218,7 @@ var comandos = {
 
 
  "leitura_artigo_regimento": {
-    "nome": "Extrato Legislativo",
+    "nome": "Ler artigo do regimento",
     "alias": [new RegExp("artigo\\s([\\d]*)º?\\sdo\\sregimento")],
     "action": function(texto, tag, regex_result) {
 
@@ -325,7 +326,6 @@ var comandos = {
         comando_on();
 
       });
-      inicia_comandos();
 
     }
  },
@@ -411,8 +411,10 @@ var comandos = {
         comandos_atuais.unshift(comandos["pauta_mes"]);
         comandos_atuais.unshift(comandos["cancelar"]);
         comando_on();
+        console.log("LISTANDO ITENS DA PAUTA!");
+        console.log(comandos_atuais);
+
       });
-      inicia_comandos();
 
     }
  },
@@ -498,8 +500,9 @@ var comandos = {
     "alias": [/curiosidade/g, /curiozidade/g], 
     "action": function(texto, tag, regex_result) {
 
+      console.log("EXIBINDO CURIOSIDADE...");
       var idx = Math.floor((Math.random()*curiosidades.length));
-      var texto = [];
+      var texto = divide_texto_em_100(curiosidades[idx]);
       //texto.push(COMANDO_ATIVACAO);
       falar_mais(texto, function(){
 
@@ -518,7 +521,12 @@ var comandos = {
             "nome": "retornar_oicamara",
             "alias": [/não/g, /retornar/g],
             "action": function(){
-              comandos["oi_camara"].action()
+              comando_off();
+              falar(COMANDO_ATIVACAO, function(){
+                try { recognition.start(); } catch(err) {}
+                recognizing = true;
+              });
+              //comandos["oi_camara"].action()
             }
           });
           comando_on();
@@ -667,6 +675,8 @@ recognition.onstart = function() {
 recognition.onerror = function(event) {
   console.log("ERRO!", event.error);
 
+  try { recognition.start(); } catch(err) {}
+
   if (comando_ativo) { 
     //comando_off(true);
     //audio_inativo.currentTime = 0;
@@ -699,9 +709,13 @@ recognition.onerror = function(event) {
 
 recognition.onend = function() {
   console.log("onEND!");
-
-
   recognizing = false;
+
+  try {
+    recognition.start();
+    recognizing = true;
+  } catch(err) {}
+
   //if (ignore_onend) {
   //  return;
   //}
@@ -715,7 +729,9 @@ recognition.onresult = function(event) {
     console.log("detectou alguma coisa mas ainda está falando há " + (Date.now() - last_talk));
     return;
   }
+
   console.log("Detectei alguma coisa", event.results);
+  console.log(last_talk, (Date.now() - last_talk));
 
   // verificar comandos aqui
   for (var i = event.resultIndex; i < event.results.length; ++i) {
@@ -736,6 +752,9 @@ recognition.onresult = function(event) {
     */
 
   }
+  console.log("PASSOU TUDO");
+
+
   if (comando_ativo && last_recognizing && (Date.now() - last_recognizing > 5000)) {
     comando_off();
     falar("Não entendi o que você disse. " + COMANDO_ATIVACAO, function(){
@@ -797,7 +816,7 @@ var carrega_pauta = function(data) {
       if (!pauta.pauta.reuniao) {
         texto_detalhe.push("não encontrei nenhum registro de pauta.");
         texto_detalhe.push("Lembre-se que normalmente, a plenária se reúne de segunda a sexta.");
-
+        texto_detalhe.push(COMANDO_ATIVACAO); 
       } else {
         pauta = pauta.pauta;
         var data = pauta["@dataInicial"];
@@ -862,11 +881,11 @@ var carrega_pauta = function(data) {
           }
 
         }
+        texto_detalhe.push("Esta foi a pauta do dia. " + COMANDO_ATIVACAO); // "Que outra informação você gostaria de saber sobre a câmara? Processo legislativo ou curiosidades?")
 
 
       }
 
-      texto_detalhe.push("Esta foi a pauta do dia. " + COMANDO_ATIVACAO); // "Que outra informação você gostaria de saber sobre a câmara? Processo legislativo ou curiosidades?")
 
       falar_mais(texto_detalhe, function(){
         inicia_comandos();

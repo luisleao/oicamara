@@ -56,6 +56,12 @@ var falar_mais = function(texto_array, callback) {
   if (!texto_array || !texto_array.length || texto_array.length == 0) {
     if (callback)
       callback();
+
+    if (!recognizing) {
+      try { recognition.start(); } catch(err) {}
+      recognizing = true;
+    }
+
     return;
   }
 
@@ -65,43 +71,45 @@ var falar_mais = function(texto_array, callback) {
 }
 
 
+var tmr_reset;
+
 
 // funcao principal de fala
 var falar = function(texto, callback) {
   falando = true;
   last_talk = Date.now();
 
-  recognition.stop();
+  try { recognition.stop(); } catch(err) {}
   recognizing = false;
 
   console.log("FALANDO: ", texto);
 
   var audio_especial = new Audio();
   audio_especial.addEventListener('ended', function(){
-
+    if (tmr_reset) clearTimeout(tmr_reset);
+    last_talk = Date.now();
     falando = false;
-    if (!recognizing) {
-
-      try {
-        recognition.start();
-      } catch(err) {
-
-      }
-
-      recognizing = true;
-    }
-
     if (callback) { 
       callback();
     } else {
       comando_off();
     }
+
+    if (!recognizing) {
+      try { recognition.start(); } catch(err) {}
+      recognizing = true;
+    }
+
+
   });
 
 
   audio_especial.src = "http://translate.google.com.br/translate_tts?ie=UTF-8&tl=pt&total="+texto.length+"&q=" + texto;
-  audio_especial.playbackRate = 1.85; //2; //1.7;
+  audio_especial.playbackRate = 1.7; //2; //1.7; //1.85;
   audio_especial.play();
+
+  if (tmr_reset) clearTimeout(tmr_reset);
+  tmr_reset = setTimeout(reset_fala, 10000);
 
 }
 
